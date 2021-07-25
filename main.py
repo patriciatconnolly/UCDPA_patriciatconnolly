@@ -82,9 +82,65 @@ print("check to ensure all fields have a value:")
 print(new_df2.isna().sum())
 print("log position 4 after replace nan with 0")
 
+print(list(new_df2.columns))
+
+new_df3=new_df2[new_df2["Daily and Seven Day Rolling Totals"]=="Daily total"]
+print(new_df3)
+
+debit_card_trans_atm=new_df3[new_df3["Statistic"]=="Debit Card Transactions - ATM Withdrawals"]
+
+debit_card_trans_pos=new_df3[new_df3["Statistic"]=="Debit Card Transactions - Point of Sale"]
+
+debit_card_trans=pd.concat([debit_card_trans_atm,debit_card_trans_pos])
+
+print(debit_card_trans_atm.shape)
+print(debit_card_trans_pos.shape)
+print(debit_card_trans.shape)
+print(debit_card_trans.describe())
+
+debit_card_vols_atm=new_df3[new_df3["Statistic"]=="Debit Card Volumes - ATM Withdrawals"]
+
+debit_card_vols_pos=new_df3[new_df3["Statistic"]=="Debit Card Volumes - Point of Sale"]
+
+debit_card_vols=pd.concat([debit_card_vols_atm,debit_card_vols_pos])
+print(debit_card_vols_atm.shape)
+print(debit_card_vols_pos.shape)
+print(debit_card_vols.shape)
+print("debit cards***")
+
+credit_card_trans_per=new_df3[new_df3["Statistic"]=="Credit Card Transactions - Personal Cards"]
+
+credit_card_trans_bus=new_df3[new_df3["Statistic"]=="Credit Card Transactions - Business Cards"]
+
+credit_card_trans=pd.concat([credit_card_trans_per,credit_card_trans_bus])
+
+print(credit_card_trans_per.shape)
+print(credit_card_trans_bus.shape)
+print(credit_card_trans.shape)
+print(credit_card_trans.describe())
+
+credit_card_vols_per=new_df3[new_df3["Statistic"]=="Credit Card Volumes - Personal Cards"]
+
+credit_card_vols_bus=new_df3[new_df3["Statistic"]=="Credit Card Volumes - Business Cards"]
+
+credit_card_vols=pd.concat([credit_card_vols_per,credit_card_vols_bus])
+print(credit_card_vols_per.shape)
+print(credit_card_vols_bus.shape)
+print(credit_card_vols.shape)
+print("credit cards***")
+
+
+#daily_card_payments= new_df2.sort_values("Daily and Seven Day Rolling =Totals", ascending=[True])
+#print(daily_card_payments.head())
+
+#mask_rolling_totals = daily_card_payments.'Daily and Seven Day Rolling Totals' == 'Daily total'
+#daily_total = daily_card_payments.loc[mask_rolling_totals]
+#daily_total.describe(include='object')
+
 
 
 print("\n")
+
 print("Detailed Daily Card Payments file imported")
 
 #import Retail Sales Index in csv file from CSO website call 'retail_sales' dataframe
@@ -139,6 +195,8 @@ print(year_value)
 year2020=retail_sales_20_21[retail_sales_20_21['TLIST(M1)']<202101]["VALUE"].agg('sum')
 year2021=retail_sales_20_21[retail_sales_20_21['TLIST(M1)']>201912]["VALUE"].agg('sum')
 print("abc")
+
+#tidy up
 print(year_value[0])
 print(year2020)
 
