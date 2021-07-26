@@ -12,22 +12,23 @@ import datetime as datetime
 import method
 
 # Requesting an API "CBM03 - Detailed Daily Card Payments" from www.cso.ie
-# request=requests.get('https://ws.cso.ie/public/api.jsonrpc?data=%7B%22jsonrpc%22:%222.0%22,%22method%22:%22PxStat.Data.Cube_API.ReadDataset%22,%22params%22:%7B%22class%22:%22query%22,%22id%22:%5B%5D,%22dimension%22:%7B%7D,%22extension%22:%7B%22pivot%22:null,%22codes%22:false,%22language%22:%7B%22code%22:%22en%22%7D,%22format%22:%7B%22type%22:%22CSV%22,%22version%22:%221.0%22%7D,%22matrix%22:%22CBM03%22%7D,%22version%22:%222.0%22%7D%7D')
+# request=requests.get('https://ws.cso.ie/public/api.jsonrpc?data=%7B%22jsonrpc%22:%222.0%22,%22method%22:%22PxStat.Data.Cube_API.ReadDataset%22,%22params%22:%7B%22class%22:%22query%22,%22id%22:%5B%5D,%22dimension%22:%7B%7D,%22extension%22:%7B%22pivot%22:null,%22codes%22:false,%22language%22:%7B%22code%22:%22en%22%7D,%22format%22:%7B%22type%22:%22CSV%22,%22version%22:%221.0%22%7D,%22matrix%22:%22CBM03%22%7D,%22version%22:%222.0%22%7D%')
 
-# request=requests.get('https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CBM03/CSV/1.0/en')
+response=requests.get('https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CBM03/CSV/1.0/en')
 
-# print(request.status_code)
+print(response.status_code)
 
-# if request.status_code==200:
-#   print("Success")
-# else:
-# print("Error")
+if response.status_code==200:
+    print("Success")
+else:
+     print("Error")
 
-data = pd.read_csv("https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CBM03/CSV/1.0/en")
+data = pd.read_csv("https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CBM03/CSV/1.0/en", parse_dates=['Daily'])
 print("*****  log position 1 get api file   *****")
 print("")
 print("head of dataframe 'data':")
 print(data.head())
+print(data['Daily'])
 print("")
 print("describe: dataframe 'data':")
 print(data.describe())
@@ -38,6 +39,7 @@ print("test1")
 
 print(data.count())
 print(len(data.index))
+
 data_count = len(data.index)
 print("test2")
 
@@ -50,6 +52,12 @@ print(type(data['Daily']))
 print("")
 from datetime import datetime
 
+#data_ind= data.set_index("Daily")
+#data_monthly=data_ind.resample('M').sum()
+print(data.head())
+
+#data.groupby(pd.Grouper(freq='M'))
+#print(data.head())
 format_str = "%Y %B %d"
 # data["Month"]=data[datetime.strptime(data['Daily'], format_str)]
 
@@ -75,6 +83,15 @@ print("")
 print("shape of df_new:")
 print("shape of new_df")
 print(new_df.shape)
+
+new_df_count = len(new_df.index)
+
+if new_df_count == data_count:
+    print("\n *** Check: Count of rows in new_df = count of rows in data")
+else:
+    print("\n *** Check: Count of rows in new_df does not equal count of rows in data")
+
+
 print("")
 print("display how many fields have not available:")
 print(new_df.isna().sum())
@@ -96,7 +113,10 @@ print(list(new_df2.columns))
 new_df3 = new_df2[new_df2["Daily and Seven Day Rolling Totals"] == "Daily total"]
 print(new_df3)
 
-new_df3.set_index('Daily', inplace=True)
+#data_ind= data.set_index("Daily")
+#data_monthly=data_ind.resample('M').sum()
+
+#new_df3.set_index('Daily', inplace=True)
 print("**********")
 print(list(new_df3.columns))
 print(new_df3.head())
@@ -105,6 +125,29 @@ debit_card_trans_atm = new_df3[new_df3["Statistic"] == "Debit Card Transactions 
 debit_card_trans_pos = new_df3[new_df3["Statistic"] == "Debit Card Transactions - Point of Sale"]
 
 debit_card_trans = pd.concat([debit_card_trans_atm, debit_card_trans_pos])
+
+
+print(debit_card_trans_atm['Daily'])
+print("\n")
+
+debit_card_trans_atm_ind= debit_card_trans_atm.set_index("Daily")
+debit_card_trans_atm_monthly=debit_card_trans_atm_ind.resample('M').sum()
+print("monthly totals debit card atm:")
+print(debit_card_trans_atm_monthly)
+print("\n")
+debit_card_trans_pos_ind= debit_card_trans_pos.set_index("Daily")
+debit_card_trans_pos_monthly=debit_card_trans_pos_ind.resample('M').sum()
+print("monthly totals debit card pos:")
+print(debit_card_trans_pos_monthly)
+print("\n")
+debit_card_trans_ind= debit_card_trans.set_index("Daily")
+debit_card_trans_monthly=debit_card_trans_ind.resample('M').sum()
+print("monthly totals debit card totals:")
+print(debit_card_trans_monthly)
+print("\n")
+
+#data_ind= data.set_index("Daily")
+#data_monthly=data_ind.resample('M').sum()
 
 # use of indexing
 totals = ["Total value for Debit Card Transactions - ATM Withdrawals", "Total value for Debit Card Transactions - Point of Sale","Total value for Debit Card Transactions"]
@@ -125,9 +168,18 @@ debit_card_vols_atm = new_df3[new_df3["Statistic"] == "Debit Card Volumes - ATM 
 debit_card_vols_pos = new_df3[new_df3["Statistic"] == "Debit Card Volumes - Point of Sale"]
 
 debit_card_vols = pd.concat([debit_card_vols_atm, debit_card_vols_pos])
+
 print(debit_card_vols_atm.shape)
 print(debit_card_vols_pos.shape)
 print(debit_card_vols.shape)
+
+debit_card_trans_pos_ind= debit_card_trans_pos.set_index("Daily")
+debit_card_trans_pos_monthly=debit_card_trans_pos_ind.resample('M').sum()
+print("monthly totals debit card pos:")
+print(debit_card_trans_pos_monthly)
+print("\n")
+
+
 print("*****  debit cards   *****")
 
 credit_card_trans_per = new_df3[new_df3["Statistic"] == "Credit Card Transactions - Personal Cards"]
@@ -146,6 +198,33 @@ credit_card_vols_per = new_df3[new_df3["Statistic"] == "Credit Card Volumes - Pe
 credit_card_vols_bus = new_df3[new_df3["Statistic"] == "Credit Card Volumes - Business Cards"]
 
 credit_card_vols = pd.concat([credit_card_vols_per, credit_card_vols_bus])
+
+credit_card_trans_per.set_index("Daily")
+credit_card_trans_per["Month"] = credit_card_trans_per.index.resample('M')
+print("test monthly conversion********************")
+credit_card_trans_per_ind = credit_card_trans_per.set_index("Daily")
+credit_card_trans_per_monthly = credit_card_trans_per_ind.resample('M').sum()
+print("monthly totals credit card transactions per:")
+print(credit_card_trans_per_monthly)
+print("\n")
+credit_card_trans_bus_ind = credit_card_trans_bus.set_index("Daily")
+credit_card_trans_bus_monthly = credit_card_trans_bus_ind.resample('M').sum()
+print("monthly totals credit card trans bus:")
+print(credit_card_trans_bus_monthly)
+print("\n")
+
+credit_card_vols_per_ind= credit_card_vols_per.set_index("Daily")
+credit_card_vols_per_monthly=credit_card_vols_per_ind.resample('M').sum()
+print("monthly totals credit card per:")
+print(credit_card_vols_per_monthly)
+print("\n")
+credit_card_vols_bus_ind= credit_card_vols_bus.set_index("Daily")
+credit_card_vols_bus_monthly=credit_card_vols_bus_ind.resample('M').sum()
+print("monthly totals credit card bus:")
+print(credit_card_vols_bus_monthly)
+print("\n")
+
+
 print(credit_card_vols_per.shape)
 print(credit_card_vols_bus.shape)
 print(credit_card_vols.shape)
@@ -174,6 +253,9 @@ print(retail_sales.head())
 print("")
 print("column names of dataframe 'retail_sales':")
 print(list(retail_sales.columns))
+print("n/")
+print("shape dataframe 'retail_sales':")
+print(retail_sales.shape)
 print("")
 print("mapping for retail_sales")
 print("")
