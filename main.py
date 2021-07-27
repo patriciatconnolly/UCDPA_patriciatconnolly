@@ -205,7 +205,22 @@ print(list(debit_card_monthly_merged.columns))
 print("merge test above***********")
 print("\n")
 
+fig, ax=plt.subplots()
+ax[0,0].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_vols_atm"], marker="o", linestyle="--", color="r", label="ATM transactions")
+ax[0,0].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_vols_pos"], marker="v", linestyle="--", color="b", label="POS transactions")
+ax[0,0].set_xlabel("Date")
+ax[0,0].set_ylabel("Volume of Debit Card transactions")
+ax[0,0].set_title("Volume of Debit Card transactions in Euro Thousand")
+plt.show()
 
+ax[0,1].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_trans_atm"], marker="o", linestyle="--", color="r", label="ATM transactions")
+ax[0,1].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_trans_pos"], marker="v", linestyle="--", color="b", label="POS transactions")
+ax[0,1].set_xlabel("Date")
+ax[0,1].set_ylabel("Number of transactions")
+ax[0,1].set_title("Number of Debit Card transactions")
+plt.legend()
+#plt.show()
+print("\n")
 print("*****  debit cards   *****")
 
 credit_card_trans_per = new_df3[new_df3["Statistic"] == "Credit Card Transactions - Personal Cards"]
@@ -282,6 +297,37 @@ print("\n")
 print(credit_card_vols_per.shape)
 print(credit_card_vols_bus.shape)
 print(credit_card_vols.shape)
+
+fig, ax=plt.subplots(2,2)
+ax[0,0].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_vols_atm"], marker="o", linestyle="--", color="r", label="ATM transactions")
+ax[0,0].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_vols_pos"], marker="v", linestyle="--", color="b", label="POS transactions")
+ax[0,0].set_xlabel("Date")
+ax[0,0].set_ylabel("Volume of Debit Card transactions")
+ax[0,0].set_title("Volume of Debit Card transactions in Euro Thousand")
+
+ax[0,1].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_trans_atm"], marker="o", linestyle="--", color="r", label="ATM transactions")
+ax[0,1].plot(debit_card_monthly_merged["Daily"], debit_card_monthly_merged["VALUE_dc_trans_pos"], marker="v", linestyle="--", color="b", label="POS transactions")
+ax[0,1].set_xlabel("Date")
+ax[0,1].set_ylabel("Number of transactions")
+ax[0,1].set_title("Number of Debit Card transactions")
+#plt.legend()
+
+ax[1,0].plot(credit_card_monthly_merged["Daily"], credit_card_monthly_merged["VALUE_cc_vols_per"], marker="o", linestyle="--", color="r", label="Personal volume")
+ax[1,0].plot(credit_card_monthly_merged["Daily"], credit_card_monthly_merged["VALUE_cc_vols_bus"], marker="v", linestyle="--", color="b", label="Business volume")
+ax[1,0].set_xlabel("Date")
+ax[1,0].set_ylabel("Volume of transactions")
+ax[1,0].set_title("Volume of Credit Card transactions in Euro Thousand")
+
+
+ax[1,1].plot(credit_card_monthly_merged["Daily"], credit_card_monthly_merged["VALUE_cc_trans_per"], marker="o", linestyle="--", color="r", label="Personal transactions")
+ax[1,1].plot(credit_card_monthly_merged["Daily"], credit_card_monthly_merged["VALUE_cc_trans_bus"], marker="v", linestyle="--", color="b", label="Business transactions")
+ax[1,1].set_xlabel("Date")
+ax[1,1].set_ylabel("Number of transactions")
+ax[1,1].set_title("Number of Credit Card transactions")
+
+#plt.legend()
+#plt.show()
+
 print("*****  credit cards   *****")
 
 # daily_card_payments= new_df2.sort_values("Daily and Seven Day Rolling =Totals", ascending=[True])
