@@ -123,26 +123,24 @@ print(new_df3.head())
 
 debit_card_trans_atm = new_df3[new_df3["Statistic"] == "Debit Card Transactions - ATM Withdrawals"]
 debit_card_trans_pos = new_df3[new_df3["Statistic"] == "Debit Card Transactions - Point of Sale"]
-
 debit_card_trans = pd.concat([debit_card_trans_atm, debit_card_trans_pos])
-
 
 print(debit_card_trans_atm['Daily'])
 print("\n")
 
 debit_card_trans_atm_ind= debit_card_trans_atm.set_index("Daily")
 debit_card_trans_atm_monthly=debit_card_trans_atm_ind.resample('M').sum()
-print("monthly totals debit card atm:")
+print("monthly totals debit card atm trans:")
 print(debit_card_trans_atm_monthly)
 print("\n")
 debit_card_trans_pos_ind= debit_card_trans_pos.set_index("Daily")
 debit_card_trans_pos_monthly=debit_card_trans_pos_ind.resample('M').sum()
-print("monthly totals debit card pos:")
+print("monthly totals debit card pos trans:")
 print(debit_card_trans_pos_monthly)
 print("\n")
 debit_card_trans_ind= debit_card_trans.set_index("Daily")
 debit_card_trans_monthly=debit_card_trans_ind.resample('M').sum()
-print("monthly totals debit card totals:")
+print("monthly totals debit card trans:")
 print(debit_card_trans_monthly)
 print("\n")
 
@@ -164,28 +162,54 @@ print(debit_card_trans.shape)
 print(debit_card_trans.describe())
 
 debit_card_vols_atm = new_df3[new_df3["Statistic"] == "Debit Card Volumes - ATM Withdrawals"]
-
 debit_card_vols_pos = new_df3[new_df3["Statistic"] == "Debit Card Volumes - Point of Sale"]
-
 debit_card_vols = pd.concat([debit_card_vols_atm, debit_card_vols_pos])
 
 print(debit_card_vols_atm.shape)
 print(debit_card_vols_pos.shape)
 print(debit_card_vols.shape)
 
-debit_card_trans_pos_ind= debit_card_trans_pos.set_index("Daily")
-debit_card_trans_pos_monthly=debit_card_trans_pos_ind.resample('M').sum()
-print("monthly totals debit card pos:")
-print(debit_card_trans_pos_monthly)
+debit_card_vols_atm_ind = debit_card_vols_atm.set_index("Daily")
+debit_card_vols_atm_monthly = debit_card_vols_atm_ind.resample('M').sum()
+print("monthly totals debit card volume atm:")
+print(debit_card_vols_atm_monthly)
+print("\n")
+debit_card_vols_pos_ind= debit_card_vols_pos.set_index("Daily")
+debit_card_vols_pos_monthly=debit_card_vols_pos_ind.resample('M').sum()
+print("monthly totals debit card volume pos:")
+print(debit_card_vols_pos_monthly)
+print("\n")
+debit_card_vols_ind= debit_card_vols.set_index("Daily")
+debit_card_vols_monthly=debit_card_vols_ind.resample('M').sum()
+print("monthly totals debit card volume:")
+print(debit_card_vols_monthly)
+print("\n")
+
+debit_card_trans_test=pd.merge_ordered(debit_card_trans_atm_monthly, debit_card_trans_pos_monthly, on='Daily', suffixes=('_dc_trans_atm', '_dc_trans_pos'))
+print(debit_card_trans_test)
+debit_card_trans_monthly_merged=pd.merge_ordered(debit_card_trans_test, debit_card_trans_monthly, on='Daily', suffixes=('_dc_trans_atm', '_dc_trans_pos'))
+debit_card_trans_monthly_merged.rename(columns = {'VALUE':'VALUE_dc_trans_total'}, inplace=True)
+print(debit_card_trans_monthly_merged)
+
+debit_card_vols_test=pd.merge_ordered(debit_card_vols_atm_monthly, debit_card_vols_pos_monthly, on='Daily', suffixes=('_dc_vols_atm', '_dc_vols_pos'))
+print(debit_card_vols_test)
+debit_card_vols_monthly_merged=pd.merge_ordered(debit_card_vols_test, debit_card_vols_monthly, on='Daily', suffixes=('_dc_vols_atm', '_dc_vols_pos'))
+debit_card_vols_monthly_merged.rename(columns = {'VALUE':'VALUE_dc_vols_total'}, inplace=True)
+print(debit_card_vols_monthly_merged)
+
+debit_card_monthly_merged=pd.merge_ordered(debit_card_trans_monthly_merged, debit_card_vols_monthly_merged, on='Daily', suffixes=('__trans', '__vols'))
+#debit_card_trans_monthly_merged.rename(columns = {'VALUE':'VALUE_dc_trans_total'}, inplace=True)
+print(debit_card_monthly_merged)
+print("column names of dataframe 'debit_card_monthly':")
+print(list(debit_card_monthly_merged.columns))
+print("merge test above***********")
 print("\n")
 
 
 print("*****  debit cards   *****")
 
 credit_card_trans_per = new_df3[new_df3["Statistic"] == "Credit Card Transactions - Personal Cards"]
-
 credit_card_trans_bus = new_df3[new_df3["Statistic"] == "Credit Card Transactions - Business Cards"]
-
 credit_card_trans = pd.concat([credit_card_trans_per, credit_card_trans_bus])
 
 print(credit_card_trans_per.shape)
@@ -194,17 +218,16 @@ print(credit_card_trans.shape)
 print(credit_card_trans.describe())
 
 credit_card_vols_per = new_df3[new_df3["Statistic"] == "Credit Card Volumes - Personal Cards"]
-
 credit_card_vols_bus = new_df3[new_df3["Statistic"] == "Credit Card Volumes - Business Cards"]
-
 credit_card_vols = pd.concat([credit_card_vols_per, credit_card_vols_bus])
 
-credit_card_trans_per.set_index("Daily")
-credit_card_trans_per["Month"] = credit_card_trans_per.index.resample('M')
+#credit_card_trans_per.set_index("Daily")
+#credit_card_trans_per["Month"] = credit_card_trans_per.index.resample('M')
+
 print("test monthly conversion********************")
 credit_card_trans_per_ind = credit_card_trans_per.set_index("Daily")
 credit_card_trans_per_monthly = credit_card_trans_per_ind.resample('M').sum()
-print("monthly totals credit card transactions per:")
+print("monthly totals credit card trans per:")
 print(credit_card_trans_per_monthly)
 print("\n")
 credit_card_trans_bus_ind = credit_card_trans_bus.set_index("Daily")
@@ -212,18 +235,49 @@ credit_card_trans_bus_monthly = credit_card_trans_bus_ind.resample('M').sum()
 print("monthly totals credit card trans bus:")
 print(credit_card_trans_bus_monthly)
 print("\n")
+credit_card_trans_ind = credit_card_trans.set_index("Daily")
+credit_card_trans_monthly = credit_card_trans_ind.resample('M').sum()
+print("monthly totals credit card trans:")
+print(credit_card_trans_monthly)
+print("\n")
+
+credit_card_trans_test=pd.merge_ordered(credit_card_trans_per_monthly, credit_card_trans_bus_monthly, on='Daily', suffixes=('_cc_trans_per', '_cc_trans_bus'))
+print(credit_card_trans_test)
+credit_card_trans_monthly_merged=pd.merge_ordered(credit_card_trans_test, credit_card_trans_monthly, on='Daily', suffixes=('_cc_trans_per', '_cc_trans_bus', '_cc_trans_total'))
+credit_card_trans_monthly_merged.rename(columns = {'VALUE':'VALUE_cc_trans_total'}, inplace=True)
+print(credit_card_trans_monthly_merged)
+print("merge test above***********")
+print("\n")
 
 credit_card_vols_per_ind= credit_card_vols_per.set_index("Daily")
 credit_card_vols_per_monthly=credit_card_vols_per_ind.resample('M').sum()
-print("monthly totals credit card per:")
+print("monthly totals credit card per vols:")
 print(credit_card_vols_per_monthly)
 print("\n")
 credit_card_vols_bus_ind= credit_card_vols_bus.set_index("Daily")
 credit_card_vols_bus_monthly=credit_card_vols_bus_ind.resample('M').sum()
-print("monthly totals credit card bus:")
+print("monthly totals credit card bus vols:")
 print(credit_card_vols_bus_monthly)
 print("\n")
+credit_card_vols_ind= credit_card_vols.set_index("Daily")
+credit_card_vols_monthly=credit_card_vols_ind.resample('M').sum()
+print("monthly totals credit card vols:")
+print(credit_card_vols_monthly)
+print("\n")
 
+credit_card_vols_test=pd.merge_ordered(credit_card_vols_per_monthly, credit_card_vols_bus_monthly, on='Daily', suffixes=('_cc_vols_per', '_cc_vols_bus'))
+print(credit_card_vols_test)
+credit_card_vols_monthly_merged=pd.merge_ordered(credit_card_vols_test, credit_card_vols_monthly, on='Daily', suffixes=('_cc_vols_per', '_cc_vols_bus', '_cc_vols_total'))
+credit_card_vols_monthly_merged.rename(columns = {'VALUE':'VALUE_cc_vols_total'}, inplace=True)
+print(credit_card_vols_monthly_merged)
+
+credit_card_monthly_merged=pd.merge_ordered(credit_card_trans_monthly_merged, credit_card_vols_monthly_merged, on='Daily', suffixes=('__trans', '__vols'))
+#credit_card_trans_monthly_merged.rename(columns = {'VALUE':'VALUE_cc_trans_total'}, inplace=True)
+print(credit_card_monthly_merged)
+print("column names of dataframe 'retail_sales':")
+print(list(credit_card_monthly_merged.columns))
+print("merge test above***********")
+print("\n")
 
 print(credit_card_vols_per.shape)
 print(credit_card_vols_bus.shape)
