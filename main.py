@@ -460,12 +460,18 @@ print("**** Grouping used above")
 print("\n")
 print("position 11 group df with date and higher NACE code")
 
+#not working!
 # set TLIST(M1) to be index and then group up using resample with Month frequency and sum the VALUE column
-retail_sales_20_21_grouped_ind = retail_sales_20_21_grouped.set_index("TLIST(M1)")
-retail_sales_20_21_grouped_monthly = retail_sales_20_21_grouped_ind.resample('M').sum()
+#retail_sales_20_21_grouped_ind = retail_sales_20_21_grouped.set_index("TLIST(M1)")
+#retail_sales_20_21_grouped_monthly = retail_sales_20_21_grouped_ind.resample('M').sum()
 
-retail_sales_20_21_grouped_monthly.plot(kind='bar', y='VALUE')
-plt.show()
+#retail_sales_20_21_grouped_monthly.plot(kind='bar', y='VALUE')
+#plt.show()
 # retail_sales_20_21.groupby(["TLIST(M1),"NACE higher Group"])["VALUE"].agg('sum').plot(kind='bar', y='VALUE')
 
 
+numpy_df = pd.read_csv("retail_sales_index_cso.csv", usecols = ["Statistic"]) # read just the Statistic field from the csv file
+#convert dataframe to numpy array
+arr = numpy_df.to_numpy()
+print (arr.size)  # print count of values in numpy array
+print(np.unique(arr)) # print unique numpy array values
